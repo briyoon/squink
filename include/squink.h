@@ -1,3 +1,6 @@
+#ifndef SQUINK_H
+#define SQUINK_H
+
 #include <stdio.h>
 
 enum log_level {
@@ -16,16 +19,24 @@ enum log_template {
   TEMPLATE_MESSAGE
 };
 
-struct log_settings {
-  enum log_level level;
+enum log_sink_type { SINK_CONSOLE, SINK_FILE };
 
-  char *template_str;
+struct log_sink_node {
+  enum log_sink_type type;
+  void *sink;
+  struct log_sink_node *next;
 };
 
-void log_init(enum log_level level);
-void log_set_level(enum log_level level);
+struct log_settings {
+  struct log_sink_node *sinks;
+};
+
 const char *log_get_level(enum log_level level);
-void log_add_fp(FILE *fp, enum log_level level);
+
+void log_add_file_sink(FILE *fp, enum log_level);
+void log_add_console_sink(FILE *std, enum log_level);
+void log_free_sinks();
+
 void log_log(enum log_level level, char *file, int line, const char *fmt, ...);
 
 #define log_debug(fmt, ...)                                                    \
@@ -38,3 +49,5 @@ void log_log(enum log_level level, char *file, int line, const char *fmt, ...);
   log_log(LEVEL_ERROR, __FILE__, __LINE__, fmt, __VA_ARGS__)
 #define log_fatal(fmt, ...)                                                    \
   log_log(LEVEL_FATAL, __FILE__, __LINE__, fmt, __VA_ARGS__)
+
+#endif // SQUINK_H

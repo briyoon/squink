@@ -7,25 +7,25 @@ Squink is a dynamic logging library for C applications, representing the first p
 
 The development of Squink is guided by a set of structured goals, organized into Easy, Medium, and Hard categories, each representing a phase in the development roadmap.
 
-- ### [ ] Easy Goals
+- ### [x] Easy Goals
     - [x] Basic logging functionality
-    - [ ] Basic file logging
+    - [x] Basic file logging
     - [x] Simple API for initialization and configuration
-    - [ ] Build system setup (CMake)
+    - [x] Build system setup (CMake)
 
 - ### [ ] Medium Goals
     - [ ] Configurable log format string
     - [ ] Advanced file logging features (file rotation)
     - [ ] Basic thread safety
     - [ ] Static library compilation
-    - [ ] Basic console and file sink configuration
+    - [x] Basic console and file sink configuration
     - [x] Include filename and line number in log messages
 
 - ### [ ] Hard Goals
     - [ ] Advanced thread safety and performance
     - [ ] Dynamic log levels
     - [ ] Method name and thread ID logging
-    - [ ] Configurable logging sinks
+    - [x] Configurable logging sinks
     - [ ] Comprehensive documentation and examples
 
 ## Sister Project: Stamp
