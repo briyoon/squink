@@ -15,14 +15,14 @@ char *level_colors[] = {ANSI_COLOR_CYAN, ANSI_COLOR_GREEN, ANSI_COLOR_YELLOW,
 
 void log_add_file_sink(FILE *fp, enum log_level level) {
   struct log_sink_file *sink =
-      (struct log_sink_file *)malloc(sizeof(struct log_sink_file));
+      (struct log_sink_file *)calloc(1, sizeof(struct log_sink_file));
 
   sink->base.enabled = true;
   sink->base.level = level;
   sink->fp = fp;
 
   struct log_sink_node *head =
-      (struct log_sink_node *)malloc(sizeof(struct log_sink_node));
+      (struct log_sink_node *)calloc(1, sizeof(struct log_sink_node));
 
   head->type = SINK_FILE;
   head->sink = (struct log_sink_base *)sink;
@@ -40,7 +40,7 @@ void log_add_console_sink(FILE *std, enum log_level level) {
   }
 
   struct log_sink_console *sink =
-      (struct log_sink_console *)malloc(sizeof(struct log_sink_console));
+      (struct log_sink_console *)calloc(1, sizeof(struct log_sink_console));
 
   sink->base.enabled = true;
   sink->base.level = level;
@@ -48,7 +48,7 @@ void log_add_console_sink(FILE *std, enum log_level level) {
   sink->color = true;
 
   struct log_sink_node *head =
-      (struct log_sink_node *)malloc(sizeof(struct log_sink_node));
+      (struct log_sink_node *)calloc(1, sizeof(struct log_sink_node));
 
   head->type = SINK_CONSOLE;
   head->sink = (struct log_sink_base *)sink;
@@ -75,9 +75,24 @@ void log_log(enum log_level level, char *file, int line, const char *fmt, ...) {
   struct log_sink_node *current_sink = LOG_SETTINGS.sinks;
 
   bool init_flag = false;
-  char time_str[24];
-  const char *level_str;
-  char message[512];
+  char time_str[24] = "";
+  const char *level_str = "";
+  char message[512] = "";
+
+  // time
+  struct timeval tv;
+  gettimeofday(&tv, NULL);
+  time_t now = tv.tv_sec;
+  strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S", localtime(&now));
+  snprintf(time_str + 19, 5, ".%03d", (int)(tv.tv_usec / 1000));
+
+  // level
+  level_str = level_strings[level];
+
+  // message
+  va_list args;
+  va_start(args, fmt);
+  vsnprintf(message, sizeof(message), fmt, args);
 
   while (current_sink != NULL) {
     struct log_sink_base *base = (struct log_sink_base *)current_sink->sink;
@@ -85,25 +100,10 @@ void log_log(enum log_level level, char *file, int line, const char *fmt, ...) {
       break;
     }
 
-    if (init_flag == false) {
-      // time
-      struct timeval tv;
-      time_t now = tv.tv_sec;
-      gettimeofday(&tv, NULL);
-      strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S",
-               localtime(&now));
-      snprintf(time_str + 19, 5, ".%03d", (int)(tv.tv_usec / 1000));
+    // if (init_flag == false) {
 
-      // level
-      level_str = level_strings[level];
-
-      // message
-      va_list args;
-      va_start(args, fmt);
-      vsnprintf(message, sizeof(message), fmt, args);
-
-      init_flag = true;
-    }
+    //   init_flag = true;
+    // }
 
     switch (current_sink->type) {
     case SINK_FILE:
