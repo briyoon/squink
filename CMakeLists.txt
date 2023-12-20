@@ -10,15 +10,19 @@ set(CMAKE_C_STANDARD_REQUIRED True)
 # Add include directory
 include_directories(include)
 
-# Add the executable
-add_executable(squink src/log.c)
+# Create a library from src/squink.c
+add_library(squink_lib STATIC src/squink.c)
+set_target_properties(squink_lib PROPERTIES PUBLIC_HEADER include/squink.h)
 
-# Specify the public headers
-set_target_properties(squink PROPERTIES PUBLIC_HEADER include/squink.h)
+# Collect all .c files in the test directory
+file(GLOB TEST_SOURCES "test/*.c")
 
-# Set the location for library installation
-# install(TARGETS squink
-#     ARCHIVE DESTINATION lib
-#     LIBRARY DESTINATION lib
-#     RUNTIME DESTINATION bin
-#     PUBLIC_HEADER DESTINATION include)
+# Create an executable for each test source file
+foreach(TEST_SOURCE ${TEST_SOURCES})
+    # Get a valid name for each test executable based on the source file name
+    get_filename_component(TEST_NAME ${TEST_SOURCE} NAME_WE)
+    # Add executable for each test file
+    add_executable(${TEST_NAME} ${TEST_SOURCE})
+    # Link the test executable with the squink_lib library
+    target_link_libraries(${TEST_NAME} squink_lib)
+endforeach()
