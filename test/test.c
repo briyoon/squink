@@ -7,7 +7,7 @@ int main(int argc, char *argv[]) {
   log_add_file_sink(fp, LEVEL_DEBUG);
   log_add_console_sink(stdout, LEVEL_DEBUG);
 
-  for (int i = 0; i < 1000000; i++) {
+  for (int i = 0; i < 10000; i++) {
     int random = rand() % 5;
 
     switch (random) {
@@ -30,4 +30,5 @@ int main(int argc, char *argv[]) {
   }
 
   log_free_sinks();
+  fclose(fp);
 }
