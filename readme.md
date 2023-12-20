@@ -17,9 +17,10 @@ The development of Squink is guided by a set of structured goals, organized into
     - [ ] Configurable log format string
     - [ ] Advanced file logging features (file rotation)
     - [ ] Basic thread safety
-    - [ ] Static library compilation
+    - [x] Static library compilation
     - [x] Basic console and file sink configuration
     - [x] Include filename and line number in log messages
+    - [ ] Batch IO operations for better latency
 
 - ### [ ] Hard Goals
     - [ ] Advanced thread safety and performance
