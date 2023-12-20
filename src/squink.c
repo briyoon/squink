@@ -9,6 +9,9 @@
 #include <unistd.h>
 
 struct log_settings LOG_SETTINGS;
+char *level_strings[] = {"DEBUG", "INFO", "WARNING", "ERROR", "FATAL"};
+char *level_colors[] = {ANSI_COLOR_CYAN, ANSI_COLOR_GREEN, ANSI_COLOR_YELLOW,
+                        ANSI_COLOR_RED, ANSI_COLOR_BLACK};
 
 void log_add_file_sink(FILE *fp, enum log_level level) {
   struct log_sink_file *sink =
@@ -68,23 +71,6 @@ void log_free_sinks() {
   }
 }
 
-const char *log_get_level(enum log_level level) {
-  switch (level) {
-  case LEVEL_DEBUG:
-    return "DEBUG";
-  case LEVEL_INFO:
-    return "INFO";
-  case LEVEL_WARNING:
-    return "WARNING";
-  case LEVEL_ERROR:
-    return "ERROR";
-  case LEVEL_FATAL:
-    return "FATAL";
-  default:
-    return "UNKNOWN";
-  }
-}
-
 void log_log(enum log_level level, char *file, int line, const char *fmt, ...) {
   struct log_sink_node *current_sink = LOG_SETTINGS.sinks;
 
@@ -109,7 +95,7 @@ void log_log(enum log_level level, char *file, int line, const char *fmt, ...) {
       snprintf(time_str + 19, 5, ".%03d", (int)(tv.tv_usec / 1000));
 
       // level
-      level_str = log_get_level(level);
+      level_str = level_strings[level];
 
       // message
       va_list args;
@@ -125,8 +111,14 @@ void log_log(enum log_level level, char *file, int line, const char *fmt, ...) {
               "[%s %s] %s:%d %s\n", time_str, level_str, file, line, message);
       break;
     case SINK_CONSOLE:
-      fprintf(((struct log_sink_console *)current_sink->sink)->stream,
-              "[%s %s] %s:%d %s\n", time_str, level_str, file, line, message);
+      if (((struct log_sink_console *)current_sink->sink)->color) {
+        fprintf(((struct log_sink_console *)current_sink->sink)->stream,
+                "[%s %s%s%s] %s:%d %s\n", time_str, level_colors[level],
+                level_str, ANSI_COLOR_RESET, file, line, message);
+      } else {
+        fprintf(((struct log_sink_console *)current_sink->sink)->stream,
+                "[%s %s] %s:%d %s\n", time_str, level_str, file, line, message);
+      }
       break;
     default:
       break;
