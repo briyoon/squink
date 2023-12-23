@@ -2,11 +2,10 @@
 #define SQUINK_SINKS_FILE_H
 
 #include "base.h"
-#include <stdio.h>
 
 struct log_sink_file {
   struct log_sink_base base;
-  FILE *fp;
+  // insert rotating file stuff here
 };
 
 void log_log_file(struct log_sink_file *sink, enum log_level level, char *file,

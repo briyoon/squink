@@ -15,7 +15,6 @@
 
 struct log_sink_console {
   struct log_sink_base base;
-  FILE *stream;
   bool color;
 };
 

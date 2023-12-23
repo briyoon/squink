@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 
+#define MAX_MSG_SIZE 256
+
 enum log_level {
   LEVEL_DEBUG,
   LEVEL_INFO,
